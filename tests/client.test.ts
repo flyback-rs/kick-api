@@ -1,6 +1,6 @@
 import { afterEach, beforeEach, describe, expect, test, vi } from 'vitest';
 import { KickApiError, KickClient } from '../src';
-import { authorization, createFetchMock, json } from './helpers';
+import { authorization, createFetchMock, json, requestBody } from './helpers';
 import type { User } from '../src';
 
 const user: User = {
@@ -79,7 +79,11 @@ describe('KickClient', () => {
     );
     const client = new KickClient({ apiKey: 'token', fetch: fetchMock });
 
-    await client.categories.getCategories({ id: [1, 2, 3], name: ['Old School RuneScape'], limit: 5 });
+    await client.categories.getCategories({
+      id: [1, 2, 3],
+      name: ['Old School RuneScape'],
+      limit: 5
+    });
 
     expect(calls[0].url.searchParams.get('id')).toBe('1,2,3');
     expect(calls[0].url.searchParams.get('name')).toBe('Old School RuneScape');
@@ -104,7 +108,7 @@ describe('KickClient', () => {
 
     expect(calls).toHaveLength(3);
     expect(calls[0].url.toString()).toBe('https://id.kick.com/oauth/token');
-    const form = new URLSearchParams(calls[0].init.body as string);
+    const form = new URLSearchParams(requestBody(calls[0]));
     expect(form.get('grant_type')).toBe('client_credentials');
     expect(form.get('client_id')).toBe('client-id');
     expect(form.get('client_secret')).toBe('client-secret');
@@ -122,7 +126,7 @@ describe('KickClient', () => {
 
     expect(response.data).toEqual({ is_sent: true, message_id: 'uuid-1' });
     expect(calls[0].init.method).toBe('POST');
-    expect(JSON.parse(calls[0].init.body as string)).toEqual({
+    expect(JSON.parse(requestBody(calls[0]))).toEqual({
       type: 'bot',
       content: 'hello chat'
     });
@@ -174,7 +178,7 @@ describe('KickClient', () => {
       client.channels.getChannels({
         broadcaster_user_id: [1],
         slug: ['KingCondor']
-      } as Parameters<typeof client.channels.getChannels>[0])
+      })
     ).rejects.toThrow(TypeError);
     expect(calls).toHaveLength(0);
   });

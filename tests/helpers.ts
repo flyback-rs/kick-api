@@ -36,3 +36,11 @@ export function json(body: unknown, status = 200): Response {
 export function authorization(call: RecordedCall): string | null {
   return new Headers(call.init.headers).get('authorization');
 }
+
+/** Reads the request body of a recorded call as a string. */
+export function requestBody(call: RecordedCall): string {
+  if (typeof call.init.body !== 'string') {
+    throw new TypeError(`Expected the call to ${call.url.href} to record a string request body`);
+  }
+  return call.init.body;
+}

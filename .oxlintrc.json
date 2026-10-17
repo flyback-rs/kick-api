@@ -8,9 +8,13 @@
   "rules": {
     "import/no-cycle": "error",
     "import/no-duplicates": "error",
-    "import/no-mutable-exports": "error"
+    "import/no-mutable-exports": "error",
+    "typescript/no-unsafe-type-assertion": "off"
   },
   "env": {
     "builtin": true
+  },
+  "options": {
+    "typeAware": true
   }
 }

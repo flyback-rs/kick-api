@@ -8,7 +8,7 @@ import {
   KickApiError,
   KickClient
 } from '../src';
-import { authorization, createFetchMock, json } from './helpers';
+import { authorization, createFetchMock, json, requestBody } from './helpers';
 
 beforeEach(() => {
   vi.stubEnv('KICK_API_KEY', '');
@@ -138,7 +138,7 @@ describe('OAuthResource', () => {
     expect(token.access_token).toBe('user-token');
     expect(calls[0].url.toString()).toBe('https://id.kick.com/oauth/token');
     expect(calls[0].init.method).toBe('POST');
-    const form = new URLSearchParams(calls[0].init.body as string);
+    const form = new URLSearchParams(requestBody(calls[0]));
     expect(form.get('grant_type')).toBe('authorization_code');
     expect(form.get('code')).toBe('code-1');
     expect(form.get('code_verifier')).toBe('verifier');
@@ -166,7 +166,7 @@ describe('OAuthResource', () => {
     const token = await client.oauth.refreshAccessToken({ refresh_token: 'old-refresh' });
 
     expect(token.access_token).toBe('new-token');
-    const form = new URLSearchParams(calls[0].init.body as string);
+    const form = new URLSearchParams(requestBody(calls[0]));
     expect(form.get('grant_type')).toBe('refresh_token');
     expect(form.get('refresh_token')).toBe('old-refresh');
   });

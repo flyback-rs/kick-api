@@ -1,6 +1,6 @@
 import { afterEach, beforeEach, describe, expect, test, vi } from 'vitest';
 import { KickClient } from '../src';
-import { createFetchMock, json } from './helpers';
+import { createFetchMock, json, requestBody } from './helpers';
 
 /** Creates a client with a fetch mock that replies with the queued responses. */
 function setup(...queue: Response[]) {
@@ -27,7 +27,7 @@ describe('ads', () => {
 
     await client.ads.createAdBreak({ break_duration_seconds: 90 });
 
-    const body = JSON.parse(calls[0].init.body as string);
+    const body = JSON.parse(requestBody(calls[0]));
     expect(body.break_duration_seconds).toBe(90);
     expect(body.id).toMatch(/^[0-9a-f-]{36}$/);
   });
@@ -177,7 +177,7 @@ describe('events', () => {
 
     expect(response.data[0].subscription_id).toBe('sub-1');
     expect(calls[0].init.method).toBe('POST');
-    expect(JSON.parse(calls[0].init.body as string)).toEqual({
+    expect(JSON.parse(requestBody(calls[0]))).toEqual({
       events: [{ name: 'chat.message.sent', version: 1 }],
       method: 'webhook',
       broadcaster_user_id: 2696
@@ -244,7 +244,7 @@ describe('moderation', () => {
 
     await client.moderation.banUser({ broadcaster_user_id: 2696, user_id: 156130 });
 
-    expect(JSON.parse(calls[0].init.body as string)).toEqual({
+    expect(JSON.parse(requestBody(calls[0]))).toEqual({
       broadcaster_user_id: 2696,
       user_id: 156130
     });
@@ -257,7 +257,7 @@ describe('moderation', () => {
 
     expect(calls[0].url.pathname).toBe('/public/v1/moderation/bans');
     expect(calls[0].init.method).toBe('DELETE');
-    expect(JSON.parse(calls[0].init.body as string)).toEqual({
+    expect(JSON.parse(requestBody(calls[0]))).toEqual({
       broadcaster_user_id: 2696,
       user_id: 156130
     });

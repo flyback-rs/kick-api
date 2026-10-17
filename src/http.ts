@@ -168,6 +168,9 @@ export class HttpClient {
   /**
    * Sends an HTTP request and parses the JSON response.
    *
+   * The response body is not validated at runtime; callers are responsible for typing the
+   * endpoint's documented response shape.
+   *
    * @typeParam T - Expected shape of the parsed response body.
    * @param config - Request configuration.
    *
